@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06111e">
+<title>Smart Connect Card | Dr Mohammed Al-Nabhani</title>
+<!-- ربط ملف الـ CSS الخارجي -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="brandrow">
+    <div class="brand">BIZMINDMAKERS<small>SMART CONNECT CARD</small></div>
+    <div class="pill">DIGITAL BUSINESS CARD</div>
+  </header>
+  
+  <section class="card">
+    <!-- تم إدراج رابط الصورة الخاص بك هنا -->
+    <div class="avatar">
+      <img src="https://www.wenindia.org/uploads/logo__02Dec2024192604.jpg" alt="Dr Mohammed Al-Nabhani">
+    </div>
+    
+    <div class="role">Senior Manager</div>
+    <h1>Dr Mohammed Al-Nabhani</h1>
+    <div class="team">BizmindMakers Team</div>
+    <p class="bio">نبني علاقات مهنية طويلة الأمد، ونشارك فرص في مجال المنتجات والعناية ونمو الأعمال.<br>تواصل مباشر وسهل من بطاقة واحدة.</p>
+    <div class="rule"></div>
+    
+    <nav class="actions" aria-label="طرق التواصل">
+      <a class="action" href="tel:+966546723820"><span class="ico">☎️</span>اتصال مباشر<span class="sub">Call now</span></a>
+      <a class="action" href="https://wa.me/966546723820" target="_blank" rel="noopener"><span class="ico">🟢</span>واتساب<span class="sub">WhatsApp</span></a>
+      <a class="action" href="mailto:drmuhammed.najeed2020@gmail.com"><span class="ico">✉️</span>البريد الإلكتروني<span class="sub">Email</span></a>
+      <button class="action" type="button" onclick="openQR()" style="cursor:pointer;font:inherit"><span class="ico">▦</span>رمز QR<span class="sub">Scan card</span></button>
+    </nav>
+    
+    <button class="save" type="button" onclick="saveContact()"><span>＋</span> احفظ رقمي في هاتفك</button>
+    
+    <div class="qrbox">
+      <img id="qrSmall" alt="QR code for this card" src="">
+      <div class="qrtext">
+        <strong>امسح الرمز لفتح البطاقة</strong>
+        <p id="qrStatus">هذه نسخة محلية؛ انشر ملف HTML أولًا حتى يرتبط الرمز برابط البطاقة الحقيقي.</p>
+        <button class="qrbtn" onclick="openQR()" type="button">عرض QR بحجم كبير</button>
+      </div>
+    </div>
+    
+    <div class="details">
+      <div class="detail"><b>☎</b><a href="tel:+966546723820">+966 54 672 3820</a></div>
+      <div class="detail"><b>✉</b><a href="mailto:drmuhammed.najeed2020@gmail.com">drmuhammed.najeed2020@gmail.com</a></div>
+    </div>
+  </section>
+  
+  <div class="foot">FOREVER · HEALTH · WEALTH · FREEDOM</div>
+  <div class="note">تُحدّث بيانات الاتصال داخل ملف HTML. لا يتطلب حفظ جهة الاتصال إدخال البيانات يدويًا، لكن الهاتف قد يطلب تأكيد فتح الملف.</div>
+</main>
+
+<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" onclick="if(event.target===this)closeQR()">
+ <div class="modalinner">
+   <h2 id="qrTitle">Smart Connect Card QR</h2>
+   <img id="qrLarge" alt="QR code" src="">
+   <p class="hint" id="modalHint">الرابط الحقيقي لا يتوفر قبل استضافة الملف على الإنترنت.</p>
+   <button class="close" onclick="closeQR()" type="button">إغلاق</button>
+ </div>
+</div>
+
+<script>
+const contact = {
+  firstName: "Mohammed",
+  lastName: "Al-Nabhani",
+  phone: "+966546723820",
+  email: "drmuhammed.najeed2020@gmail.com",
+  title: "Senior Manager",
+  org: "BizmindMakers Team"
+};
+
+function saveContact(){
+  const esc = s => String(s).replace(/\\/g,"\\\\").replace(/,/g,"\\,").replace(/;/g,"\\;").replace(/\n/g,"\\n");
+  const vcf = [
+    "BEGIN:VCARD","VERSION:3.0",
+    "N:"+esc(contact.lastName)+";"+esc(contact.firstName)+";;;",
+    "FN:"+esc(contact.firstName+" "+contact.lastName),
+    "ORG:"+esc(contact.org),"TITLE:"+esc(contact.title),
+    "TEL;TYPE=CELL,VOICE:"+contact.phone,
+    "EMAIL;TYPE=INTERNET:"+contact.email,
+    "END:VCARD"
+  ].join("\r\n");
+  const blob = new Blob([vcf],{type:"text/vcard;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download="Dr-Mohammed-Al-Nabhani.vcf";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+function currentCardUrl(){
+  if(location.protocol==="http:" || location.protocol==="https:") return location.href.split("#")[0];
+  return "";
+}
+
+function refreshQR(){
+  const url=currentCardUrl();
+  const status=document.getElementById("qrStatus"), hint=document.getElementById("modalHint");
+  if(url){
+    const qr="https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=12&data="+encodeURIComponent(url);
+    document.getElementById("qrSmall").src=qr;
+    document.getElementById("qrLarge").src=qr;
+    status.textContent="رمز QR مرتبط برابط البطاقة المنشور.";
+    hint.textContent="امسح الرمز من هاتف آخر لفتح البطاقة المنشورة.";
+  }else{
+    const placeholder="https://api.qrserver.com/v1/create-qr-code/?size=440x440&data="+encodeURIComponent("Smart Connect Card — publish this HTML to create a shareable URL");
+    document.getElementById("qrSmall").src=placeholder; document.getElementById("qrLarge").src=placeholder;
+    status.textContent="هذه نسخة محلية؛ انشر ملف HTML أولًا حتى يرتبط الرمز برابط البطاقة الحقيقي.";
+    hint.textContent="الرابط الحقيقي لا يتوفر قبل استضافة الملف على الإنترنت.";
+  }
+}
+
+function openQR(){refreshQR();document.getElementById("qrModal").classList.add("open")}
+function closeQR(){document.getElementById("qrModal").classList.remove("open")}
+
+refreshQR();
+</script>
+
+</body>
+</html>
